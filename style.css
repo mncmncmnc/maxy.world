@@ -1,0 +1,172 @@
+body {
+  background: white;
+  /* font-size: 4.2vw; */
+  font-size: calc(3vw + 12px);
+  font-family: "Times New Roman";
+}
+
+.clock {
+  position: absolute;
+  margin: 0.5vw;
+  top: 0;
+  right: 0;
+  color: black;
+  z-index: +1;
+}
+
+.intro {
+  position: relative;
+  top: 0;
+  left: 0;
+  background-color: white;
+  max-width: 60%;
+}
+
+.stuff {
+  position: absolute;
+  margin-right: 0.5vw;
+  padding-right: 0.5vw;
+  background-color: white;
+}
+
+.bio
+{
+  padding-bottom: 5px;
+}
+
+.beat {
+  position: fixed;
+  margin: 0.5vw;
+  padding: 1vw;
+  bottom: 0;
+  left: 0;
+  border-style: solid;
+  border-width: 2.5px;
+  background-color: white;
+  z-index: -2;
+}
+
+.contact {
+  position: fixed;
+  margin: 0.5vw;
+  padding: 1vw;
+  bottom:0;
+  right: 0;
+  border-style: solid;
+  border-width: 2.5px;
+  background-color: white;
+  z-index: -1;
+
+}
+
+.thumb {
+  min-height: 30px;
+  max-width: 3em;
+  display: inline;
+  position: relative;
+  top: 15px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  z-index: 0;
+}
+
+.back {
+  position: fixed;
+  margin: 0.5vw;
+  padding: 1vw;
+  bottom:0;
+  right: 0;
+  border-style: solid;
+  border-width: 2.5px;
+  font-size: 4vh;
+  z-index: +1;
+}
+
+
+  .projects {
+    font-size: 3vh;
+  }
+
+
+/* second class for details tag with no outline */
+.b1 {
+  font-size: 4.5vh;
+  outline: 0px solid black
+}
+
+
+img {
+  max-width: 60%;
+}
+
+video {
+  max-width: 80%;
+}
+
+/* details styling */
+
+details {
+  font-size: 3vh;
+  padding: 20px; /* the padding here */
+  outline: 2.5px solid black;
+}
+
+summary {
+  cursor: pointer;
+  /* display: block; */
+  padding: 10px;
+  margin:-20px; /* negative margin here */
+  user-select: none;
+}
+details[open] summary {
+  margin-bottom:20px; /* the bottom the same as padding*/
+}
+
+
+/* video embed */
+
+/*
+.video-container { position: relative; padding-bottom: 56.25%; padding-top: 30px; height: 0; overflow: hidden; }
+
+.video-container iframe, .video-container object, .video-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; } */
+
+
+/* link styling */
+
+summary:hover {
+  color: #404040;
+}
+
+summary:active {
+  color: hotpink;
+}
+
+a:link {
+  color: black;
+  text-decoration: underline;
+  text-decoration-line: underline;
+  /* text-underline-offset: 0.5vw;
+  text-decoration-thickness: 0.3vw; */
+  /* text-decoration-color: black; */
+}
+
+a:visited {
+  text-decoration: underline;
+  color: black;
+}
+
+a:hover {
+  color: #404040;
+}
+
+a:active {
+  color: hotpink;
+}
+
+@media screen and (max-width: 800px) {
+  details {
+    font-size: 6vw;
+  }
+  .b1 {
+    font-size: 6vw; }
+}
