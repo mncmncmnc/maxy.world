@@ -85,6 +85,16 @@ body {
 
   .projects {
     font-size: 3vh;
+    max-width: 65ch;
+    margin-left: calc(2vw + 10px);
+  }
+
+  .projects img {
+    max-width: 100%;
+  }
+
+  .projects video {
+    max-width: 100%;
   }
 
 
