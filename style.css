@@ -60,14 +60,15 @@ body {
 }
 
 .thumb {
-  min-height: 30px;
-  max-width: 3em;
+  width: 3em;
+  height: 1.875em;
   display: inline;
   position: relative;
   top: 15px;
   margin-right: 5px;
   margin-bottom: 5px;
   z-index: 0;
+  object-fit: cover;
 }
 
 .back {
