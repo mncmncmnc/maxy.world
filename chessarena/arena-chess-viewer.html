@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Are.na Correspondence Chess Viewer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --board-px: 320px;
+      --board-controls-gap: 10px;
+      --controls-row-px: 32px;
+      --board-column-height: calc(var(--board-px) + var(--board-controls-gap) + var(--controls-row-px));
+      /* Matches board row: board + column gap + history column max-width */
+      --main-stack-width: calc(var(--board-px) + 2.5rem + 360px);
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: #ffffff;
+      color: #1a1a18;
+      margin: 0;
+    }
+    input, button { font-family: inherit; }
+    .page {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+    }
+    h1 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; text-align: center; }
+    .main-stack {
+      width: 100%;
+      max-width: min(100%, var(--main-stack-width));
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .url-wrap {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    #url-bar { display: flex; gap: 8px; }
+    #url-bar input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 0.5px solid #ccc;
+      font-size: 14px;
+      background: #fff;
+    }
+    #url-bar button {
+      padding: 8px 16px;
+      border: 0.5px solid #ccc;
+      background: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    #url-bar button:hover { background: #f1f0e8; }
+    #status { font-size: 13px; color: #888; margin-bottom: 1rem; min-height: 20px; text-align: center; }
+    #status.error { color: #FF0000; }
+    #skipped-notation {
+      width: 100%;
+      margin: -0.25rem 0 1rem;
+      font-size: 13px;
+      color: #5c5a54;
+      text-align: left;
+    }
+    #skipped-notation:not([open]) summary { list-style-position: inside; }
+    #skipped-notation summary {
+      cursor: pointer;
+      color: #7a5f20;
+      text-align: left;
+    }
+    #skipped-notation summary::-webkit-details-marker { display: none; }
+    #skipped-notation[hidden] { display: none !important; }
+    #skipped-list {
+      margin: 0.5rem 0 0;
+      padding: 0 0 0 1.1rem;
+      font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
+      font-size: 12px;
+    }
+    #skipped-list li { margin-bottom: 0.3rem; }
+    .game-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 2rem 2.5rem;
+      width: 100%;
+    }
+    .side-col {
+      flex: 1 1 260px;
+      max-width: 360px;
+      min-width: min(100%, 240px);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    #board-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    #board-svg {
+      width: 320px;
+      height: 320px;
+      display: block;
+      border: 3px solid #000;
+      font-family: Arial, sans-serif;
+    }
+    #controls { display: flex; gap: 6px; align-items: center; }
+    #controls button {
+      width: 36px; height: 32px;
+      border: 0.5px solid #ccc;
+      background: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #controls button:hover { background: #f1f0e8; }
+    #move-count { font-size: 13px; color: #888; min-width: 60px; text-align: center; line-height: 32px; }
+    #history-panel {
+      border: 0.5px solid #c8c6c0;
+      padding: 0;
+      background: #fdfcfa;
+      max-height: var(--board-column-height);
+      overflow-y: auto;
+    }
+    .scoresheet {
+      padding: 0.65rem 0.75rem 0.85rem;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .scoresheet .move-text {
+      font-size: 13px;
+      font-family: "SF Mono", "Fira Code", monospace;
+    }
+    .scoresheet-head {
+      display: grid;
+      grid-template-columns: 28px 1fr 1fr;
+      gap: 4px;
+      padding-bottom: 0.35rem;
+      margin-bottom: 0.25rem;
+      border-bottom: 1px solid #b0aea8;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #6a6860;
+    }
+    .scoresheet-h-num { text-align: center; font-variant-numeric: tabular-nums; }
+    .scoresheet-h-w, .scoresheet-h-b { padding-left: 2px; }
+    .scoresheet-body { display: flex; flex-direction: column; gap: 0; }
+    .scoresheet-row {
+      display: grid;
+      grid-template-columns: 28px 1fr 1fr;
+      gap: 4px;
+      align-items: stretch;
+      min-height: 30px;
+      border-bottom: 1px solid #e8e6e0;
+    }
+    .scoresheet-num {
+      font-size: 12px;
+      color: #b9b6ae;
+      padding-top: 6px;
+      font-variant-numeric: tabular-nums;
+    }
+    .scoresheet-cell {
+      border-left: 1px solid #e5e3dd;
+      min-height: 30px;
+      background: #fbfaf8;
+    }
+    .scoresheet-cell:last-of-type { border-right: 1px solid #e5e3dd; }
+    .scoresheet-cell--move {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .scoresheet-cell--move:hover { background: #f3f1eb; }
+    .scoresheet-cell--move.active { background: #e8e4da; font-weight: 500; }
+    .scoresheet-cell--move.invalid { color: #c0392b; }
+    .scoresheet-cell--blank { cursor: default; }
+    .warn-icon { font-size: 12px; }
+    .avatar {
+      width: 20px; height: 20px;
+      object-fit: cover; flex-shrink: 0;
+      font-size: 8px; display: flex; align-items: center; justify-content: center;
+      font-weight: 500; background: #dbeafe; color: #1e40af;
+    }
+    .players-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .player-chip { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+    /* Kept in DOM so loadChannel can set href/text; not shown (inline display from JS is overridden). */
+    #arena-link { display: none !important; }
+
+    .page-about {
+      margin-top: 2.25rem;
+      padding: 0.65rem 0.75rem 0.85rem;
+      border: 0.5px solid #c8c6c0;
+      font-size: 14px;
+      line-height: 1.55;
+      color: #3a3935;
+    }
+    .page-about__details + .page-about__details {
+      margin-top: 0.65rem;
+      padding-top: 0.65rem;
+      border-top: 0.5px solid #e5e3dd;
+    }
+    .page-about__summary {
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: #1a1a18;
+      list-style: none;
+      text-decoration: none;
+    }
+    .page-about__details[open] > .page-about__summary {
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .page-about__summary::-webkit-details-marker { display: none; }
+    .page-about__content {
+      margin-top: 0.45rem;
+      padding-right: 0.15rem;
+    }
+    .page-about__content p { margin: 0; }
+    .page-about img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin-top: 0.65rem;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .page-about a {
+      color: #1e40af;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .page-about a:hover { color: #1d4ed8; }
+
+    @media (max-width: 600px) {
+      :root {
+        --board-px: 280px;
+        --main-stack-width: calc(var(--board-px) + 1.5rem + 360px);
+      }
+      .page { padding: 1.25rem 1rem 2rem; }
+      .game-wrap { gap: 1.5rem; }
+      .side-col { max-width: none; }
+      #board-svg { width: 280px; height: 280px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>Are.na Correspondence Chess Viewer</h1>
+    <div class="main-stack">
+    <div class="url-wrap">
+      <div id="url-bar">
+        <input type="text" id="channel-url" placeholder="https://www.are.na/username/channel-name" value="" />
+        <button id="load-btn" onclick="loadChannel()">Load channel</button>
+      </div>
+    </div>
+    <div id="status"></div>
+    <details id="skipped-notation" hidden>
+      <summary id="skipped-summary"></summary>
+      <ul id="skipped-list"></ul>
+    </details>
+    <div class="game-wrap" id="main">
+      <div id="board-wrap">
+        <svg id="board-svg" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div id="controls">
+          <button onclick="goToMove(0)" title="Start">&#x23EE;</button>
+          <button onclick="stepMove(-1)" title="Back">&#x25C0;</button>
+          <span id="move-count">0 / 0</span>
+          <button onclick="stepMove(1)" title="Forward">&#x25B6;</button>
+          <button onclick="goToMove(9999)" title="End">&#x23ED;</button>
+        </div>
+      </div>
+      <div class="side-col">
+        <div id="history-panel"></div>
+        <div id="players-row" class="players-row"></div>
+        <a id="arena-link" target="_blank" href="#"></a>
+      </div>
+    </div>
+
+    <div class="page-about" id="page-about">
+      <details class="page-about__details">
+        <summary class="page-about__summary">What is this?</summary>
+        <div class="page-about__content">
+          <p>
+            Paste a public or open <a href="https://www.are.na/" target="_blank" rel="noopener noreferrer">Are.na</a> channel URL that has text blocks of <a href="https://en.wikipedia.org/wiki/Algebraic_notation_(chess)" target="_blank" rel="noopener noreferrer">SAN chess notation</a> to view those moves on a chessboard. Non-SAN chess notation messages or other content will not be included. Invalid moves are flagged. Multiple users may play either side of a game.
+          </p>
+          <img src="notation2.jpg" alt="Chess score sheet with algebraic notation" />
+        </div>
+      </details>
+      <details class="page-about__details">
+        <summary class="page-about__summary">What is Correspondence Chess?</summary>
+        <div class="page-about__content">
+          <p>
+            <a href="https://en.wikipedia.org/wiki/Correspondence_chess" target="_blank" rel="noopener noreferrer">Correspondence Chess</a> is the practice of playing chess, move by move, through a communication medium (like the mail) allowing a game to occur over a great distance of time and space. It is a centuries old practice, and has included games played via homing pigeon, postcard, telephone, fax machine, online message board, email, text message, and more. These games have spanned borders and intractable geopolitical disputes, paced over decades, and even been conducted between astronauts in orbit and the Earth.
+          </p>
+          <img src="postcard.png" alt="example of a correspondence chess postcard" />
+        </div>
+      </details>
+      <details class="page-about__details">
+        <summary class="page-about__summary">What is Are.na?</summary>
+        <div class="page-about__content">
+          <p>
+            Are.na is notoriously hard to explain
+            (<a href="https://www.are.na/are-na-team/how-do-you-describe-are-na-at-a-party" target="_blank" rel="noopener noreferrer">"how do you describe Are.na at a party?"</a>),
+            but it is a social network and community tool for collecting, researching, and sharing online. Users can collaborate on open channels and start channels together (meaning the platform is sometimes used for what might be called correspondence).
+          </p>
+          <img src="arena.png" />
+        </div>
+      </details>
+    </div>
+    </div>
+  </div>
+
+  <script>
+    const PIECE_SVG = {
+      wK: `<text paint-order="stroke fill" text-anchor="middle" dominant-baseline="central" font-size="30" fill="#ffffff" stroke="#5c4330" stroke-width="1">♚</text>`,
+      wQ: `<text paint-order="stroke fill" text-anchor="middle" dominant-baseline="central" font-size="30" fill="#ffffff" stroke="#5c4330" stroke-width="1">♛</text>`,
+      wR: `<text paint-order="stroke fill" text-anchor="middle" dominant-baseline="central" font-size="30" fill="#ffffff" stroke="#5c4330" stroke-width="1">♜</text>`,
+      wB: `<text paint-order="stroke fill" text-anchor="middle" dominant-baseline="central" font-size="30" fill="#ffffff" stroke="#5c4330" stroke-width="1">♝</text>`,
+      wN: `<text paint-order="stroke fill" text-anchor="middle" dominant-baseline="central" font-size="30" fill="#ffffff" stroke="#5c4330" stroke-width="1">♞</text>`,
+      wP: `<text paint-order="stroke fill" text-anchor="middle" dominant-baseline="central" font-size="30" fill="#ffffff" stroke="#5c4330" stroke-width="1">♟</text>`,
+      bK: `<text text-anchor="middle" dominant-baseline="central" font-size="30" fill="#2c2c2a" stroke="#2c2c2a" stroke-width="0.45">♚</text>`,
+      bQ: `<text text-anchor="middle" dominant-baseline="central" font-size="30" fill="#2c2c2a" stroke="#2c2c2a" stroke-width="0.45">♛</text>`,
+      bR: `<text text-anchor="middle" dominant-baseline="central" font-size="30" fill="#2c2c2a" stroke="#2c2c2a" stroke-width="0.45">♜</text>`,
+      bB: `<text text-anchor="middle" dominant-baseline="central" font-size="30" fill="#2c2c2a" stroke="#2c2c2a" stroke-width="0.45">♝</text>`,
+      bN: `<text text-anchor="middle" dominant-baseline="central" font-size="30" fill="#2c2c2a" stroke="#2c2c2a" stroke-width="0.45">♞</text>`,
+      bP: `<text text-anchor="middle" dominant-baseline="central" font-size="30" fill="#2c2c2a" stroke="#2c2c2a" stroke-width="0.45">♟</text>`,
+    };
+
+    const FILES = ['a','b','c','d','e','f','g','h'];
+    const SZ = 40;
+
+    let parsedMoves = [];
+    let currentMoveIdx = 0;
+    /** Lines that look like SAN but did not apply (illegal, wrong turn, etc.). */
+    let skippedNotation = [];
+
+    /** Are.na text blocks are often Markdown or HTML; strip wrappers before SAN checks / chess.move. */
+    function stripMarkdownHtml(s) {
+      let t = String(s || '').trim();
+      if (!t) return '';
+      t = t.replace(/<[^>]*>/g, '');
+      t = t.replace(/\[(.*?)\]\([^)]*\)/g, '$1');
+      t = t.replace(/\*\*([^*]*)\*\*/g, '$1');
+      t = t.replace(/\*([^*]*)\*/g, '$1');
+      t = t.replace(/__([^_]*)__/g, '$1');
+      t = t.replace(/`([^`]*)`/g, '$1');
+      t = t.replace(/~~([^~]*)~~/g, '$1');
+      return t.trim();
+    }
+
+    /**
+     * chess.js 0.10.x only accepts letter-O castling (O-O / O-O-O). Digit zeros (0-0, 0-0-0) and
+     * lowercase o are normalized so channels can use either style.
+     */
+    function normalizeCastlingNotation(s) {
+      const t = String(s || '').trim();
+      if (!/^(?:0|[oO])-(?:0|[oO])(?:-(?:0|[oO]))?$/i.test(t)) return s;
+      const n = t.split('-').length;
+      if (n === 2) return 'O-O';
+      if (n === 3) return 'O-O-O';
+      return s;
+    }
+
+    function looksLikeChessNotation(s) {
+      const t = (s || '').trim();
+      if (!t || t.length > 14) return false;
+      const tail = '(=[QRBN])?[+#]?$';
+      if (/^(0-0(-0)?|O-O(-O)?)$/i.test(t)) return true;
+      if (new RegExp(`^[a-h][1-8]${tail}`, 'i').test(t)) return true;
+      if (new RegExp(`^[a-h]x[a-h][1-8]${tail}`, 'i').test(t)) return true;
+      if (new RegExp(`^[KQRBN]([a-h]|[1-8]){0,2}x?[a-h][1-8]${tail}`, 'i').test(t)) return true;
+      return false;
+    }
+
+    function renderSkippedNotationUI() {
+      const det = document.getElementById('skipped-notation');
+      const sum = document.getElementById('skipped-summary');
+      const list = document.getElementById('skipped-list');
+      if (!skippedNotation.length) {
+        det.hidden = true;
+        det.open = false;
+        list.innerHTML = '';
+        sum.textContent = '';
+        return;
+      }
+      det.hidden = false;
+      det.open = true;
+      const n = skippedNotation.length;
+      sum.textContent =
+        n === 1
+          ? '1 line looks like chess notation but was not applied (illegal move, wrong turn, or out of sequence).'
+          : `${n} lines look like chess notation but were not applied (illegal move, wrong turn, or out of sequence).`;
+      list.innerHTML = '';
+      const maxShow = 25;
+      for (let i = 0; i < Math.min(skippedNotation.length, maxShow); i++) {
+        const row = skippedNotation[i];
+        const name = (row.user && row.user.username) || '?';
+        const li = document.createElement('li');
+        li.textContent = `${name}: ${row.san}`;
+        list.appendChild(li);
+      }
+      if (skippedNotation.length > maxShow) {
+        const li = document.createElement('li');
+        li.textContent = `… and ${skippedNotation.length - maxShow} more`;
+        list.appendChild(li);
+      }
+    }
+
+    function clearSkippedNotation() {
+      skippedNotation = [];
+      renderSkippedNotationUI();
+    }
+
+    /** Are.na /v2/channels/:slug expects the channel slug only (last URL segment), not owner/slug. */
+    function parseChannelInput(input) {
+      input = input.trim();
+      if (!input) return null;
+      const segments = (path) => path.replace(/^\//, '').split('/').filter(Boolean);
+      try {
+        const u = new URL(input.startsWith('http') ? input : 'https://' + input);
+        const parts = segments(u.pathname);
+        if (!parts.length) return null;
+        return {
+          apiSlug: parts[parts.length - 1],
+          webPath: parts.join('/'),
+        };
+      } catch (e) {
+        const parts = segments(input.replace(/^are\.na\//i, ''));
+        if (!parts.length) return null;
+        return {
+          apiSlug: parts[parts.length - 1],
+          webPath: parts.join('/'),
+        };
+      }
+    }
+
+    function setStatus(msg, isError) {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = isError ? 'error' : '';
+    }
+
+    async function loadChannel() {
+      const val = document.getElementById('channel-url').value.trim();
+      const parsed = parseChannelInput(val);
+
+      if (!parsed) {
+        document.getElementById('arena-link').style.display = 'none';
+        clearSkippedNotation();
+        processBlocks([]);
+        setStatus('');
+        return;
+      }
+
+      const { apiSlug, webPath } = parsed;
+      setStatus('Fetching channel...');
+      try {
+        const res = await fetch(
+          `https://api.are.na/v2/channels/${encodeURIComponent(apiSlug)}/contents?sort=position&per=100`
+        );
+        if (!res.ok) throw new Error(`Channel not found or not public (${res.status})`);
+        const data = await res.json();
+        const blocks = (data.contents || []).filter(b => b.class === 'Text' || b.base_class === 'Block');
+        const link = document.getElementById('arena-link');
+        link.href = `https://www.are.na/${webPath}`;
+        link.textContent = `are.na/${webPath}`;
+        link.style.display = 'inline';
+        processBlocks(blocks);
+        const skipHint =
+          skippedNotation.length > 0
+            ? ` Some notation was skipped; see the note below.`
+            : '';
+        setStatus(`Loaded ${blocks.length} blocks.${skipHint}`);
+      } catch(e) {
+        clearSkippedNotation();
+        setStatus(e.message, true);
+      }
+    }
+
+    function userKey(user) {
+      if (user && user.id != null) return `id:${user.id}`;
+      return `n:${user && user.username ? user.username : '?'}`;
+    }
+
+    function buildMoveRoster(moves) {
+      const order = [];
+      const byKey = new Map();
+      for (let i = 0; i < moves.length; i++) {
+        const m = moves[i];
+        const u = m.user || { username: '?', avatar_image: { thumb: '' } };
+        const k = userKey(u);
+        if (!byKey.has(k)) {
+          byKey.set(k, { user: u, white: 0, black: 0 });
+          order.push(k);
+        }
+        const rec = byKey.get(k);
+        if (i % 2 === 0) rec.white += 1;
+        else rec.black += 1;
+      }
+      return order.map((k) => {
+        const { user, white, black } = byKey.get(k);
+        return { user, white, black, count: white + black };
+      });
+    }
+
+    function rosterChipMeta({ white, black, count }) {
+      if (count === 0) return '';
+      const n = count === 1 ? 'move' : 'moves';
+      if (white && black) return `(${count} ${n} · ${white}W / ${black}B)`;
+      if (white && !black) return `(${count} ${n} · White)`;
+      if (!white && black) return `(${count} ${n} · Black)`;
+      return `(${count} ${n})`;
+    }
+
+    function processBlocks(blocks) {
+      const chess = new Chess();
+      parsedMoves = [];
+      skippedNotation = [];
+
+      for (const block of blocks) {
+        const rawFull = String(block.content || block.title || '').trim();
+        if (!rawFull) continue;
+        const firstLine = (rawFull.split(/\r?\n/).find((l) => l.trim()) || '').trim();
+        let san = firstLine.replace(/^\d+\.\s*/, '').trim();
+        san = stripMarkdownHtml(san);
+        san = normalizeCastlingNotation(san);
+        if (!san) continue;
+
+        const user = block.user || { username: '?', avatar_image: { thumb: '' } };
+
+        let move = null;
+        try {
+          move = chess.move(san, { sloppy: true });
+        } catch (e) {}
+
+        if (!move) {
+          if (looksLikeChessNotation(san)) {
+            skippedNotation.push({ san, raw: rawFull, user });
+          }
+          continue;
+        }
+
+        parsedMoves.push({ san, raw: rawFull, user, valid: true, move, fen: chess.fen() });
+      }
+
+      renderSkippedNotationUI();
+
+      const playersRow = document.getElementById('players-row');
+      playersRow.innerHTML = '';
+      const roster = buildMoveRoster(parsedMoves);
+      roster.forEach(({ user, white, black, count }) => {
+        const name = user.username || '?';
+        const chip = document.createElement('div');
+        chip.className = 'player-chip';
+        const avatarSrc = user.avatar_image && user.avatar_image.thumb;
+        const avatarHtml = avatarSrc
+          ? `<img class="avatar" src="${avatarSrc}" alt="${name}" onerror="this.outerHTML='<div class=\\'avatar\\'>${name[0].toUpperCase()}</div>'">`
+          : `<div class="avatar">${name[0].toUpperCase()}</div>`;
+        const meta = rosterChipMeta({ white, black, count });
+        chip.innerHTML = `${avatarHtml}<span>${name} <span style="color:#aaa;font-size:12px">${meta}</span></span>`;
+        playersRow.appendChild(chip);
+      });
+
+      currentMoveIdx = parsedMoves.length;
+      renderHistory();
+      goToMove(parsedMoves.length);
+    }
+
+    function renderScoresheetHead() {
+      return `<div class="scoresheet-head">
+        <span class="scoresheet-h-num">#</span>
+        <span class="scoresheet-h-w">White</span>
+        <span class="scoresheet-h-b">Black</span>
+      </div>`;
+    }
+
+    function renderBlankScoresheet() {
+      const rows = 16;
+      let h = '<div class="scoresheet">';
+      h += renderScoresheetHead();
+      h += '<div class="scoresheet-body">';
+      for (let n = 1; n <= rows; n++) {
+        h += '<div class="scoresheet-row">';
+        h += `<span class="scoresheet-num">${n}.</span>`;
+        h += '<span class="scoresheet-cell"></span><span class="scoresheet-cell"></span>';
+        h += '</div>';
+      }
+      h += '</div></div>';
+      return h;
+    }
+
+    function renderHistory() {
+      const panel = document.getElementById('history-panel');
+      if (!parsedMoves.length) {
+        panel.innerHTML = renderBlankScoresheet();
+        return;
+      }
+      let html = '<div class="scoresheet">';
+      html += renderScoresheetHead();
+      html += '<div class="scoresheet-body">';
+      for (let i = 0; i < parsedMoves.length; i += 2) {
+        const wm = parsedMoves[i];
+        const bm = parsedMoves[i + 1];
+        const num = Math.floor(i / 2) + 1;
+        const wActive = (i + 1) === currentMoveIdx ? ' active' : '';
+        const bActive = bm && (i + 2) === currentMoveIdx ? ' active' : '';
+        const wUser = wm.user;
+        const wAvatar = wUser.avatar_image && wUser.avatar_image.thumb
+          ? `<img class="avatar" src="${wUser.avatar_image.thumb}" onerror="this.style.display='none'">`
+          : `<div class="avatar">${(wUser.username||'?')[0].toUpperCase()}</div>`;
+        const wInvalid = !wm.valid ? ' invalid' : '';
+        const wWarn = !wm.valid ? '<span class="warn-icon" title="Invalid move">&#9888;</span>' : '';
+
+        let bCell = '';
+        if (bm) {
+          const bUser = bm.user;
+          const bAvatar = bUser.avatar_image && bUser.avatar_image.thumb
+            ? `<img class="avatar" src="${bUser.avatar_image.thumb}" onerror="this.style.display='none'">`
+            : `<div class="avatar">${(bUser.username||'?')[0].toUpperCase()}</div>`;
+          const bInvalid = !bm.valid ? ' invalid' : '';
+          const bWarn = !bm.valid ? '<span class="warn-icon" title="Invalid move">&#9888;</span>' : '';
+          bCell = `<div class="scoresheet-cell scoresheet-cell--move${bInvalid}${bActive}" onclick="goToMove(${i+2})">${bAvatar}<span class="move-text">${bm.san}</span>${bWarn}</div>`;
+        } else {
+          bCell = '<span class="scoresheet-cell scoresheet-cell--blank" aria-hidden="true"></span>';
+        }
+
+        html += `<div class="scoresheet-row">
+          <span class="scoresheet-num">${num}.</span>
+          <div class="scoresheet-cell scoresheet-cell--move${wInvalid}${wActive}" onclick="goToMove(${i+1})">${wAvatar}<span class="move-text">${wm.san}</span>${wWarn}</div>
+          ${bCell}
+        </div>`;
+      }
+      html += '</div></div>';
+      panel.innerHTML = html;
+    }
+
+    function getFenAtMove(idx) {
+      if (idx === 0) return new Chess().fen();
+      for (let i = idx - 1; i >= 0; i--) {
+        if (parsedMoves[i].fen) return parsedMoves[i].fen;
+      }
+      return new Chess().fen();
+    }
+
+    function goToMove(idx) {
+      currentMoveIdx = Math.max(0, Math.min(idx, parsedMoves.length));
+      const total = parsedMoves.length;
+      document.getElementById('move-count').textContent = `${currentMoveIdx} / ${total}`;
+      const fen = getFenAtMove(currentMoveIdx);
+      drawBoard(fen, currentMoveIdx > 0 ? parsedMoves[currentMoveIdx - 1] : null);
+      renderHistory();
+    }
+
+    function stepMove(delta) {
+      goToMove(currentMoveIdx + delta);
+    }
+
+    function drawBoard(fen, lastMove) {
+      const svg = document.getElementById('board-svg');
+      const chess = new Chess(fen);
+      let svgContent = '';
+
+      const lastFrom = lastMove && lastMove.move ? lastMove.move.from : null;
+      const lastTo   = lastMove && lastMove.move ? lastMove.move.to   : null;
+
+      for (let rank = 7; rank >= 0; rank--) {
+        for (let file = 0; file < 8; file++) {
+          const x = file * SZ;
+          const y = (7 - rank) * SZ;
+          const isLight = (rank + file) % 2 === 1;
+          const sq = FILES[file] + (rank + 1);
+          let fill = isLight ? '#f0d9b5' : '#b58863';
+          if (sq === lastFrom || sq === lastTo) fill = isLight ? '#cdd26a' : '#aaa23a';
+          svgContent += `<rect x="${x}" y="${y}" width="${SZ}" height="${SZ}" fill="${fill}" />`;
+        }
+      }
+
+      const board = chess.board();
+      for (let rank = 0; rank < 8; rank++) {
+        for (let file = 0; file < 8; file++) {
+          const piece = board[7 - rank][file];
+          if (!piece) continue;
+          const x = file * SZ + SZ / 2;
+          const y = (7 - rank) * SZ + SZ / 2;
+          const key = piece.color + piece.type.toUpperCase();
+          const pieceSvg = PIECE_SVG[key];
+          if (pieceSvg) {
+            svgContent += `<g transform="translate(${x},${y})">${pieceSvg}</g>`;
+          }
+        }
+      }
+
+      svg.innerHTML = svgContent;
+    }
+
+    window.addEventListener('load', () => {
+      processBlocks([]);
+      setStatus('');
+    });
+  </script>
+</body>
+</html>
