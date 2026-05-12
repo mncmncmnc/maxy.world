@@ -27,6 +27,12 @@ function pickRandom(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
 
+// Filenames may contain "%" (e.g. "99%is"), which the browser otherwise reads
+// as the start of a percent-encoded sequence. encodeURI leaves "/" alone.
+function imgSrc(path) {
+  return encodeURI(path);
+}
+
 function setSlot(slotEl, entry) {
   const img = slotEl.querySelector("img");
   const cap = slotEl.querySelector("figcaption");
@@ -35,7 +41,7 @@ function setSlot(slotEl, entry) {
     cap.textContent = "—";
     return;
   }
-  img.src = entry.image;
+  img.src = imgSrc(entry.image);
   img.alt = entry.item;
   cap.textContent = entry.brand ? `${entry.brand} — ${entry.item}` : entry.item;
   if (img.complete && img.naturalWidth) {
@@ -194,7 +200,7 @@ function renderLibrary(key) {
     const fig = document.createElement("figure");
     fig.className = "library-item";
     const img = document.createElement("img");
-    img.src = e.image;
+    img.src = imgSrc(e.image);
     img.alt = e.item;
     img.loading = "lazy";
     const cap = document.createElement("figcaption");
@@ -215,7 +221,7 @@ function classicShuffle() {
   };
   const set = (id, entry) => {
     const el = document.getElementById(id);
-    if (el && entry) el.src = entry.image;
+    if (el && entry) el.src = imgSrc(entry.image);
   };
   set("image_shower", pick(SLOT_FILTERS.bottom));
   set("image_shower2", pick(SLOT_FILTERS.top));
