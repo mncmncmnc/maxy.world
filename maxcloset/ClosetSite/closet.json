@@ -1924,6 +1924,26 @@
     "tags": []
   },
   {
+    "image": "../images/tops/ss shirts/generic black t shirt.jpeg",
+    "item": "generic black t shirt",
+    "brand": "",
+    "category": "tops",
+    "subcategory": "ss shirts",
+    "tags": [
+      "black"
+    ]
+  },
+  {
+    "image": "../images/tops/ss shirts/generic white t shirt.jpeg",
+    "item": "generic white t shirt",
+    "brand": "",
+    "category": "tops",
+    "subcategory": "ss shirts",
+    "tags": [
+      "white"
+    ]
+  },
+  {
     "image": "../images/tops/ss shirts/icaras wipeout t shirt black.jpg",
     "item": "icaras wipeout t shirt black",
     "brand": "",
@@ -2108,26 +2128,6 @@
     "subcategory": "ss shirts",
     "tags": [
       "black"
-    ]
-  },
-  {
-    "image": "../images/tops/ss shirts/~ generic black t shirt.jpeg",
-    "item": "~ generic black t shirt",
-    "brand": "",
-    "category": "tops",
-    "subcategory": "ss shirts",
-    "tags": [
-      "black"
-    ]
-  },
-  {
-    "image": "../images/tops/ss shirts/~ generic white t shirt.jpeg",
-    "item": "~ generic white t shirt",
-    "brand": "",
-    "category": "tops",
-    "subcategory": "ss shirts",
-    "tags": [
-      "white"
     ]
   },
   {
