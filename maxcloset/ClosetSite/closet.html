@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Max's Closet</title>
+    <link rel="stylesheet" href="closet.css" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  </head>
+  <body>
+    <header>
+      <nav id="tabs">
+        <button class="tab" data-view="randomizer" aria-current="page">randomizer</button>
+        <button class="tab" data-view="categories">library</button>
+        <button class="tab" data-view="classic">original prototype</button>
+        <button class="tab" data-view="about">about</button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- RANDOMIZER -->
+      <section id="view-randomizer" class="view">
+        <div id="left-pane">
+          <aside id="control-panel">
+            <label><input type="checkbox" data-opt="top" checked /> top</label>
+            <label><input type="checkbox" data-opt="bottom" checked /> bottom</label>
+            <label><input type="checkbox" data-opt="shoe" checked /> shoes</label>
+            <label><input type="checkbox" data-opt="jacket" /> jacket / coat</label>
+            <label><input type="checkbox" data-opt="sunglasses" /> sunglasses</label>
+            <label><input type="checkbox" data-opt="hat" /> hat</label>
+            <label><input type="checkbox" data-opt="scarf" /> scarf</label>
+            <label><input type="checkbox" data-opt="bag" /> bag</label>
+            <button id="shuffle">shuffle</button>
+          </aside>
+          <figure class="slot accessory" data-slot="sunglasses" hidden>
+            <img alt="sunglasses" /><figcaption></figcaption>
+          </figure>
+          <figure class="slot accessory" data-slot="hat" hidden>
+            <img alt="hat" /><figcaption></figcaption>
+          </figure>
+        </div>
+
+        <div id="outfit-stack">
+          <figure class="slot" data-slot="jacket" hidden>
+            <img alt="jacket" /><figcaption></figcaption>
+          </figure>
+          <figure class="slot" data-slot="top">
+            <img alt="top" /><figcaption></figcaption>
+          </figure>
+          <figure class="slot" data-slot="bottom">
+            <img alt="bottom" /><figcaption></figcaption>
+          </figure>
+          <figure class="slot" data-slot="shoe">
+            <img alt="shoes" /><figcaption></figcaption>
+          </figure>
+        </div>
+
+        <div id="right-pane">
+          <figure class="slot accessory" data-slot="scarf" hidden>
+            <img alt="scarf" /><figcaption></figcaption>
+          </figure>
+          <figure class="slot accessory" data-slot="bag" hidden>
+            <img alt="bag" /><figcaption></figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- CATEGORIES -->
+      <section id="view-categories" class="view" hidden>
+        <nav id="category-nav"></nav>
+        <div id="library"></div>
+      </section>
+
+      <!-- CLASSIC (old look) -->
+      <section id="view-classic" class="view" hidden>
+        <div id="classic-button-container">
+          <button id="classic-shuffle">click</button>
+        </div>
+
+        <div id="containercontainer">
+          <div class="classic-container">
+            <details id="jacketdetails">
+              <summary>a little cold? need a jacket?</summary>
+              <img id="image_shower3" alt="jacket" />
+            </details>
+          </div>
+          <div class="classic-container"><img id="image_shower2" alt="top" /></div>
+          <div class="classic-container"><img id="image_shower" alt="bottom" /></div>
+          <div class="classic-container"><img id="image_shower4" alt="shoes" /></div>
+        </div>
+
+        <div id="acontainercontainer">
+          <div class="classic-container">
+            <details><summary>add sunglasses</summary><img id="image_shower6" alt="sunglasses" /></details>
+          </div>
+          <div class="classic-container">
+            <details><summary>add a hat</summary><img id="image_shower7" alt="hat" /></details>
+          </div>
+          <div class="classic-container">
+            <details><summary>add a scarf</summary><img id="image_shower8" alt="scarf" /></details>
+          </div>
+          <div class="classic-container">
+            <details><summary>add a bag</summary><img id="image_shower9" alt="bag" /></details>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="view-about" class="view" hidden>
+        <div class="about-gifs">
+          <img src="../gifs/clueless1.gif" alt="Clueless closet scene" />
+          <img src="../gifs/clueless2.gif" alt="Clueless closet scene" />
+          <img src="../gifs/clueless3.gif" alt="Clueless closet scene" />
+        </div>
+        <p>
+          A prototype of an outfit generator/randomizer, inspired by
+          <a href="https://www.youtube.com/watch?v=XNDubWJU0aU" target="_blank" rel="noopener noreferrer">Cher's closet in <i>Clueless</i></a>.
+        </p>
+        <p>
+          A lifelong dream of both myself and
+          <a href="https://jessiechar.com/" target="_blank" rel="noopener noreferrer">Jessie Char</a>,
+          in the Summer of 2022 we cataloged every clothing item we owned, and then built these little prototypes.
+          The great Avery Trufelman
+          <a href="https://articlesofinterest.substack.com/p/the-clueless-closet" target="_blank" rel="noopener noreferrer">interviewed us about it</a> for the Articles of Interest podcast.
+        </p>
+      </section>
+    </main>
+
+    <script src="closet.js"></script>
+  </body>
+</html>
