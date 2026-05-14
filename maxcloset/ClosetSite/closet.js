@@ -235,6 +235,16 @@ function classicShuffle() {
 
 // ---- Tab switching ----
 
+// The classic view was designed for desktop and historically relied on mobile
+// browsers zooming out from a ~980px default viewport. Now that the page has
+// a device-width viewport meta tag, we recreate that fit-to-width feel by
+// applying CSS zoom to just the classic view — leaving the tab nav alone.
+function applyClassicZoom() {
+  const isMobile = window.matchMedia("(max-width: 720px)").matches;
+  const zoom = isMobile ? Math.min(1, window.innerWidth / 980) : 1;
+  document.documentElement.style.setProperty("--classic-zoom", zoom.toFixed(3));
+}
+
 function showView(name) {
   document.querySelectorAll(".tab").forEach((t) => {
     const active = t.dataset.view === name;
@@ -291,6 +301,8 @@ async function boot() {
   if (firstKey) renderLibrary(firstKey);
 
   shuffleOutfit();
+  applyClassicZoom();
+  window.addEventListener("resize", applyClassicZoom);
   showView("randomizer");
 }
 

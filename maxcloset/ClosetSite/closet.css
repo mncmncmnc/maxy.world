@@ -320,6 +320,86 @@ button { font: inherit; cursor: pointer; }
 
 /* ── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 720px) {
-  #view-randomizer { grid-template-columns: 1fr; }
-  #control-panel { position: static; }
+  body { padding: 0.5em 0.75em 1.5em; }
+
+  #tabs { flex-wrap: wrap; margin-bottom: 1em; }
+  .tab { padding: 0.5em 0.7em; font-size: 0.95em; }
+
+  /* Randomizer — single column, drop viewport-height locks so the page
+     scrolls naturally instead of fighting the mobile address bar */
+  #view-randomizer {
+    grid-template-columns: 1fr;
+    gap: 1em;
+  }
+  /* Stack order on mobile: outfit → accessories → control panel last */
+  #outfit-stack { order: 1; }
+  #right-pane    { order: 2; }
+  #left-pane     { order: 3; }
+  #left-pane,
+  #right-pane,
+  #outfit-stack {
+    height: auto;
+    width: 100%;
+    max-width: 100%;
+    justify-self: stretch;
+  }
+  #left-pane .slot,
+  #right-pane .slot {
+    width: 100%;
+    align-self: stretch;
+  }
+  /* Control panel sits last in the stack, capped narrower than full-bleed */
+  #left-pane #control-panel {
+    order: 99;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    padding: 0.6em 0.8em;
+    gap: 0.35em;
+  }
+  /* Shuffle pinned to the top of the panel; primary action stays reachable */
+  #control-panel #shuffle { order: -1; margin-top: 0; margin-bottom: 0.4em; }
+
+  /* Explicit slot heights so the flex img inside has something to fill;
+     desktop relied on the parent's calc() height for this */
+  #outfit-stack .slot,
+  #left-pane .slot,
+  #right-pane .slot {
+    flex: 0 0 auto;
+    height: 32vh;
+  }
+  /* Higher-specificity desktop rule sets flex-basis: 0 on bottom, which
+     would collapse the slot now that the parent has no fixed height */
+  #outfit-stack .slot[data-slot="bottom"] {
+    flex: 0 0 auto;
+    height: 32vh;
+  }
+  #outfit-stack .slot[data-slot="shoe"] { height: auto; }
+  #outfit-stack .slot[data-slot="shoe"] img {
+    height: 22vh;
+    max-width: 80%;
+  }
+
+  /* No hover on touch — keep per-slot controls visible */
+  #view-randomizer .nav-arrow,
+  #view-randomizer .lock-btn { opacity: 0.7; }
+
+  #library {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5em;
+  }
+  .library-item { padding: 0.35em; }
+  .library-item img { height: 130px; }
+  .library-item figcaption { font-size: 0.75em; }
+  .cat-btn { font-size: 0.85em; padding: 0.35em 0.6em; }
+
+  /* Text first, gifs below on mobile */
+  #view-about { display: flex; flex-direction: column; }
+  .about-gifs { order: 99; flex-direction: column; align-items: center; }
+  .about-gifs img { min-width: 0; width: 100%; max-width: 100%; }
+
+  /* Classic view zooms to fit (JS sets --classic-zoom = innerWidth / 980),
+     reproducing the pre-viewport-meta fit-to-screen behavior without
+     affecting the rest of the page */
+  #view-classic { zoom: var(--classic-zoom, 0.4); }
 }
