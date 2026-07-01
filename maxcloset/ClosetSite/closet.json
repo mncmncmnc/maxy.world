@@ -489,6 +489,14 @@
     ]
   },
   {
+    "image": "../images/bottoms/pants/hyein seo wide pants with macrame belt.jpeg",
+    "item": "hyein seo wide pants with macrame belt",
+    "brand": "Hyein Seo",
+    "category": "bottoms",
+    "subcategory": "pants",
+    "tags": []
+  },
+  {
     "image": "../images/bottoms/pants/issey miyake earth trousers.jpg",
     "item": "issey miyake earth trousers",
     "brand": "Issey Miyake",
@@ -993,6 +1001,17 @@
     ]
   },
   {
+    "image": "../images/outerwear/coats/mackintosh blanefield double breasted trench coat khaki green.jpeg",
+    "item": "mackintosh blanefield double breasted trench coat khaki green",
+    "brand": "Mackintosh",
+    "category": "outerwear",
+    "subcategory": "coats",
+    "tags": [
+      "green",
+      "khaki"
+    ]
+  },
+  {
     "image": "../images/outerwear/coats/mcqueen zip coat.jpeg",
     "item": "mcqueen zip coat",
     "brand": "Mcqueen",
@@ -1115,16 +1134,6 @@
     "category": "outerwear",
     "subcategory": "jackets",
     "tags": []
-  },
-  {
-    "image": "../images/outerwear/jackets/lioness mustard bomber jacket.jpg",
-    "item": "lioness mustard bomber jacket",
-    "brand": "Lioness",
-    "category": "outerwear",
-    "subcategory": "jackets",
-    "tags": [
-      "mustard"
-    ]
   },
   {
     "image": "../images/outerwear/jackets/mcqueen blake blazer.png",
@@ -1434,6 +1443,17 @@
     ]
   },
   {
+    "image": "../images/shoes/sneakers/asics gel kayano 20 white illusion blue sneakers.png",
+    "item": "asics gel kayano 20 white illusion blue sneakers",
+    "brand": "Asics",
+    "category": "shoes",
+    "subcategory": "sneakers",
+    "tags": [
+      "white",
+      "blue"
+    ]
+  },
+  {
     "image": "../images/shoes/sneakers/converse alexis sablone sneaker.jpeg",
     "item": "converse alexis sablone sneaker",
     "brand": "Converse",
@@ -1519,6 +1539,16 @@
     "subcategory": "buttondown shirts",
     "tags": [
       "denim"
+    ]
+  },
+  {
+    "image": "../images/tops/buttondown shirts/comme des garcons homme plus white dress shirt.jpeg",
+    "item": "comme des garcons homme plus white dress shirt",
+    "brand": "Comme des Garcons Homme Plus",
+    "category": "tops",
+    "subcategory": "buttondown shirts",
+    "tags": [
+      "white"
     ]
   },
   {
@@ -1643,26 +1673,6 @@
     "subcategory": "ls shirts",
     "tags": [
       "white"
-    ]
-  },
-  {
-    "image": "../images/tops/ls shirts/Jean Paul Gaultier The Blue Ecorche Top.jpg",
-    "item": "Jean Paul Gaultier The Blue Ecorche Top",
-    "brand": "Jean Paul Gaultier",
-    "category": "tops",
-    "subcategory": "ls shirts",
-    "tags": [
-      "blue"
-    ]
-  },
-  {
-    "image": "../images/tops/ls shirts/luu dan yellow long sleeve mesh shirt.png",
-    "item": "luu dan yellow long sleeve mesh shirt",
-    "brand": "Luu Dan",
-    "category": "tops",
-    "subcategory": "ls shirts",
-    "tags": [
-      "yellow"
     ]
   },
   {

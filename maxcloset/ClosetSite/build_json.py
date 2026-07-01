@@ -106,6 +106,7 @@ BRANDS = {
     "Kenzo": "Kenzo",
     "Lcbx": "Lcbx",
     "Luu Dan": "Luu Dan",
+    "Mackintosh": "Mackintosh",
     "Maharishi": "Maharishi",
     "Masunaga": "Masunaga",
     "Mcqueen": "Mcqueen",
