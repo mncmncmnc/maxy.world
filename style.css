@@ -82,9 +82,6 @@ body {
   height: 1.875em;
   max-width: 3em;
   display: block;
-  position: static;
-  top: auto;
-  margin: 0;
   object-fit: cover;
 }
 
@@ -141,19 +138,8 @@ body {
     max-width: 100%;
   }
 
-  .projects .project-img {
-    max-width: 40ch;
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-
   .projects h3 {
     margin: 0.5em 0;
-  }
-
-  .projects video {
-    max-width: 100%;
   }
 
 /* project overlay (full-page panel over index) */
@@ -226,8 +212,7 @@ body {
 }
 
 @media (max-width: 600px) {
-  .video-grid,
-  .video-grid.cols-2 {
+  .video-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -241,10 +226,6 @@ body {
 
 img {
   max-width: 60%;
-}
-
-video {
-  max-width: 80%;
 }
 
 /* details styling */
@@ -279,7 +260,6 @@ summary:active {
 a:link {
   color: black;
   text-decoration: underline;
-  text-decoration-line: underline;
   /* text-underline-offset: 0.5vw;
   text-decoration-thickness: 0.3vw; */
   /* text-decoration-color: black; */
