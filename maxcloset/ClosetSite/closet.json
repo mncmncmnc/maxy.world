@@ -1552,14 +1552,6 @@
     ]
   },
   {
-    "image": "../images/tops/buttondown shirts/eckhaus latta shirt.jpg",
-    "item": "eckhaus latta shirt",
-    "brand": "Eckhaus Latta",
-    "category": "tops",
-    "subcategory": "buttondown shirts",
-    "tags": []
-  },
-  {
     "image": "../images/tops/buttondown shirts/etudes wikipedia shirt.png",
     "item": "etudes wikipedia shirt",
     "brand": "Etudes",
@@ -1926,6 +1918,14 @@
     "tags": [
       "white"
     ]
+  },
+  {
+    "image": "../images/tops/ss shirts/eckhaus latta t shirt.jpg",
+    "item": "eckhaus latta t shirt",
+    "brand": "Eckhaus Latta",
+    "category": "tops",
+    "subcategory": "ss shirts",
+    "tags": []
   },
   {
     "image": "../images/tops/ss shirts/eniac six shirt.jpeg",
