@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>hazard stripe generator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Times New Roman;
+      background: #ffffff;
+      color: #000000;
+      padding: 2rem 1rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      color: #000000;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 1.5rem;
+    }
+
+    .ctrl-group {
+      background: #ffffff;
+      border: 1px solid #000000;
+      padding: 14px 16px;
+    }
+
+    .ctrl-group label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: #000000;
+      margin-bottom: 10px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .row span {
+      font-size: 13px;
+      color: #000000;
+      min-width: 14px;
+    }
+
+    input[type="number"] {
+      width: 72px;
+      padding: 5px 8px;
+      border: 1px solid #000000;
+      font-size: 13px;
+      background: #ffffff;
+      color: #000000;
+      outline: none;
+    }
+
+    input[type="number"]:focus {
+      border-color: #000000;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      accent-color: #000000;
+      cursor: pointer;
+    }
+
+    .val-out {
+      font-size: 13px;
+      font-weight: 500;
+      color: #000000;
+      min-width: 40px;
+      text-align: right;
+    }
+
+    .stripe-section {
+      background: #ffffff;
+      border: 1px solid #000000;
+      padding: 14px 16px;
+      margin-bottom: 1.5rem;
+    }
+
+    .stripe-section > label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: #000000;
+      margin-bottom: 12px;
+    }
+
+    #stripe-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .stripe-entry {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stripe-entry .entry-label {
+      font-size: 13px;
+      color: #000000;
+      width: 58px;
+      flex-shrink: 0;
+    }
+
+    .swatch {
+      width: 34px;
+      height: 34px;
+      border: 1px solid #000000;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .swatch input[type="color"] {
+      position: absolute;
+      inset: -4px;
+      width: calc(100% + 8px);
+      height: calc(100% + 8px);
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .hex-val {
+      font-size: 12px;
+      color: #000000;
+      font-family: monospace;
+    }
+
+    .add-remove {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      font-family: inherit;
+      font-size: 13px;
+      padding: 7px 14px;
+      border: 1px solid #000000;
+      background: #ffffff;
+      color: #000000;
+      cursor: pointer;
+    }
+
+    button:hover { background: #000000; color: #ffffff; }
+
+    button.primary {
+      background: #000000;
+      color: #ffffff;
+      border-color: #000000;
+    }
+
+    button.primary:hover { background: #ffffff; color: #000000; }
+
+    .btn-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .fmt-toggle {
+      display: flex;
+      border: 1px solid #000000;
+      overflow: hidden;
+    }
+
+    .fmt-toggle button {
+      border: none;
+      padding: 7px 14px;
+    }
+
+    .fmt-toggle button.active {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .fmt-toggle button:not(.active):hover { background: #000000; color: #ffffff; }
+
+    .preview-wrap {
+      background: #ffffff;
+      border: 1px solid #000000;
+      padding: 16px;
+      margin-bottom: 1rem;
+    }
+
+    .preview-wrap p {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: #000000;
+      margin-bottom: 10px;
+    }
+
+    #preview-canvas {
+      display: block;
+      max-width: 100%;
+      border: 1px solid #000000;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>sometimes you need a hazard stripe generator</h1>
+
+  <div class="controls">
+    <div class="ctrl-group">
+      <label>Canvas size (px)</label>
+      <div class="row">
+        <span>W</span>
+        <input type="number" id="cw" value="800" min="50" max="4000">
+        <span>H</span>
+        <input type="number" id="ch" value="200" min="50" max="4000">
+      </div>
+    </div>
+
+    <div class="ctrl-group">
+      <label>Stripe width (px)</label>
+      <div class="row">
+        <input type="range" id="sw" min="5" max="300" value="50" step="1">
+        <span class="val-out" id="sw-val">50</span>
+      </div>
+    </div>
+
+    <div class="ctrl-group">
+      <label>Angle (degrees)</label>
+      <div class="row">
+        <input type="range" id="ang" min="-90" max="90" value="-45" step="1">
+        <span class="val-out" id="ang-val">-45°</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stripe-section">
+    <label>Stripe colors</label>
+    <div id="stripe-rows"></div>
+    <div class="add-remove">
+      <button onclick="addStripe()">+ Add stripe</button>
+      <button onclick="removeStripe()">− Remove stripe</button>
+    </div>
+  </div>
+
+  <div class="preview-wrap">
+    <p>Preview</p>
+    <canvas id="preview-canvas"></canvas>
+  </div>
+
+  <div class="btn-row">
+    <button class="primary" onclick="renderAndDownload()">Download image</button>
+    <div class="fmt-toggle">
+      <button id="btn-png" class="active" onclick="setFmt('png')">PNG</button>
+      <button id="btn-jpg" onclick="setFmt('jpg')">JPEG</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let fmt = 'png';
+  let stripes = ['#f5c518', '#1a1a1a'];
+
+  function setFmt(f) {
+    fmt = f;
+    document.getElementById('btn-png').classList.toggle('active', f === 'png');
+    document.getElementById('btn-jpg').classList.toggle('active', f === 'jpg');
+  }
+
+  function addStripe() {
+    stripes.push('#ffffff');
+    renderStripeRows();
+    draw();
+  }
+
+  function removeStripe() {
+    if (stripes.length > 1) {
+      stripes.pop();
+      renderStripeRows();
+      draw();
+    }
+  }
+
+  function renderStripeRows() {
+    const container = document.getElementById('stripe-rows');
+    container.innerHTML = '';
+    stripes.forEach((col, i) => {
+      const row = document.createElement('div');
+      row.className = 'stripe-entry';
+
+      const lbl = document.createElement('span');
+      lbl.className = 'entry-label';
+      lbl.textContent = 'Stripe ' + (i + 1);
+
+      const swatch = document.createElement('div');
+      swatch.className = 'swatch';
+      swatch.style.background = col;
+
+      const picker = document.createElement('input');
+      picker.type = 'color';
+      picker.value = col;
+
+      const hexSpan = document.createElement('span');
+      hexSpan.className = 'hex-val';
+      hexSpan.textContent = col;
+
+      picker.addEventListener('input', function () {
+        stripes[i] = this.value;
+        swatch.style.background = this.value;
+        hexSpan.textContent = this.value;
+        draw();
+      });
+
+      swatch.appendChild(picker);
+      row.appendChild(lbl);
+      row.appendChild(swatch);
+      row.appendChild(hexSpan);
+      container.appendChild(row);
+    });
+  }
+
+  function drawToCanvas(canvas) {
+    const W = Math.min(parseInt(document.getElementById('cw').value) || 800, 4000);
+    const H = Math.min(parseInt(document.getElementById('ch').value) || 200, 4000);
+    const sw = parseInt(document.getElementById('sw').value);
+    const ang = parseInt(document.getElementById('ang').value) * Math.PI / 180;
+
+    canvas.width = W;
+    canvas.height = H;
+
+    const ctx = canvas.getContext('2d');
+    if (fmt === 'jpg') {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    const diag = Math.ceil(Math.sqrt(W * W + H * H));
+    const n = stripes.length;
+    const total = n * sw;
+
+    ctx.save();
+    ctx.translate(W / 2, H / 2);
+    ctx.rotate(ang);
+
+    for (let x = -diag; x < diag + total; x += total) {
+      stripes.forEach((col, i) => {
+        ctx.fillStyle = col;
+        ctx.fillRect(x + i * sw, -diag, sw, diag * 2);
+      });
+    }
+    ctx.restore();
+  }
+
+  function draw() {
+    const canvas = document.getElementById('preview-canvas');
+    const W = Math.min(parseInt(document.getElementById('cw').value) || 800, 4000);
+    const H = Math.min(parseInt(document.getElementById('ch').value) || 200, 4000);
+
+    drawToCanvas(canvas);
+
+    const maxW = canvas.parentElement.clientWidth - 32;
+    const scale = Math.min(1, maxW / W);
+    canvas.style.width = Math.round(W * scale) + 'px';
+    canvas.style.height = Math.round(H * scale) + 'px';
+  }
+
+  function renderAndDownload() {
+    const offscreen = document.createElement('canvas');
+    drawToCanvas(offscreen);
+    const mime = fmt === 'jpg' ? 'image/jpeg' : 'image/png';
+    const quality = fmt === 'jpg' ? 0.92 : undefined;
+    const url = offscreen.toDataURL(mime, quality);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'hazard-stripes.' + fmt;
+    a.click();
+  }
+
+  document.getElementById('sw').addEventListener('input', function () {
+    document.getElementById('sw-val').textContent = this.value;
+    draw();
+  });
+
+  document.getElementById('ang').addEventListener('input', function () {
+    document.getElementById('ang-val').textContent = this.value + '°';
+    draw();
+  });
+
+  document.getElementById('cw').addEventListener('input', draw);
+  document.getElementById('ch').addEventListener('input', draw);
+
+  renderStripeRows();
+  draw();
+</script>
+</body>
+</html>
