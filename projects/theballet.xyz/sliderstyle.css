@@ -1,0 +1,85 @@
+.instructions {
+  position: fixed;
+  align-items: flex-start;
+  font-size: 1vw;
+  margin: 4vw;
+  top: 0;
+  right: 0;
+  border: 4px double black;
+  padding: 0.5em;
+}
+
+.back {
+  position: fixed;
+  align-items: flex-start;
+  font-size: 2vw;
+  margin: 4vw;
+  top: 0;
+  left: 0;
+  border: 4px double black;
+  padding: 0.5em;
+}
+
+.rangeslider {
+  width: 50vh;
+  margin: 0 auto;
+}
+
+.myslider {
+  -webkit-appearance: none;
+  background: grey;
+  width: 100%;
+  height: 20px;
+  opacity: 0.8;
+  margin-top: 100px;
+  z-index: 0;
+}
+
+.myslider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  cursor: pointer;
+  background: black;
+  width: 10%;
+  height: 20px;
+  z-index: 0;
+}
+
+.myslider:hover {
+  opacity: 1;
+}
+
+.image {
+  position: relative;
+  width: 600px;
+  margin: 0 auto;
+  z-index: -1;
+}
+
+.image>img {
+  position: absolute;
+  display: none;
+}
+
+.image>img.visible,
+.image>img:first-child {
+  display: block;
+}
+
+
+a:link {
+  text-decoration: none;
+  color: black;
+}
+
+a:visited {
+  text-decoration: none;
+  color: black;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:active {
+  text-decoration: underline;
+}

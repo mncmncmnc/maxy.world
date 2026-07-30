@@ -27,6 +27,22 @@ function setPanelIframes(panel, load) {
     });
 }
 
+function setPanelVideos(panel, play) {
+    if (!panel) return;
+    panel.querySelectorAll("video").forEach(function (video) {
+        if (play) {
+            video.currentTime = 0;
+            const playPromise = video.play();
+            if (playPromise && typeof playPromise.catch === "function") {
+                playPromise.catch(function () {});
+            }
+        } else {
+            video.pause();
+            video.currentTime = 0;
+        }
+    });
+}
+
 function openProject(id) {
     const overlay = document.getElementById("project-overlay");
     const panel = document.getElementById("project-" + id);
@@ -35,10 +51,12 @@ function openProject(id) {
     overlay.querySelectorAll(".project-panel.is-active").forEach(function (openPanel) {
         openPanel.classList.remove("is-active");
         setPanelIframes(openPanel, false);
+        setPanelVideos(openPanel, false);
     });
 
     panel.classList.add("is-active");
     setPanelIframes(panel, true);
+    setPanelVideos(panel, true);
     overlay.classList.add("is-open");
     overlay.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
@@ -52,6 +70,7 @@ function closeProject() {
     overlay.querySelectorAll(".project-panel.is-active").forEach(function (panel) {
         panel.classList.remove("is-active");
         setPanelIframes(panel, false);
+        setPanelVideos(panel, false);
     });
     overlay.classList.remove("is-open");
     overlay.setAttribute("aria-hidden", "true");

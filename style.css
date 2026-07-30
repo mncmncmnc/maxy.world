@@ -138,6 +138,13 @@ body {
     max-width: 100%;
   }
 
+  .projects video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    pointer-events: none;
+  }
+
   .projects h3 {
     margin: 0.5em 0;
   }
@@ -181,7 +188,7 @@ body {
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   padding: 20px;
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
@@ -196,13 +203,15 @@ body {
   overflow: hidden;
 }
 
-.video-container iframe {
+.video-container iframe,
+.video-container img {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   border: none;
+  object-fit: cover;
 }
 
 @media (max-width: 900px) {
