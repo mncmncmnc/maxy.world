@@ -203,15 +203,26 @@ body {
   overflow: hidden;
 }
 
-.video-container iframe,
-.video-container img {
+.video-container iframe {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   border: none;
-  object-fit: cover;
+}
+
+/* min-size cover: Chrome won't reliably upscale animated GIFs via object-fit */
+.video-container img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: auto;
+  height: auto;
+  min-width: 100%;
+  min-height: 100%;
+  transform: translate(-50%, -50%);
+  border: none;
 }
 
 @media (max-width: 900px) {
