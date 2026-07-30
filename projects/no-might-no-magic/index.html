@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>no might, no magic</title>
+    <link rel="stylesheet" href="css/homm.css">
+</head>
+<body>
+    <canvas id="map"></canvas>
+
+    <div id="corner">
+        <button id="about-btn" title="about">?</button>
+        <button id="gear" title="controls (C)">&#9881;</button>
+    </div>
+    <div id="about" hidden>
+        <div class="about-panel">
+            <button type="button" id="about-close" title="close">&times;</button>
+            <div class="about-body">
+                <p>This is a little web-based random landscape generator that showcases and pays tribute to the aesthetic genius of <a href="https://en.wikipedia.org/wiki/Heroes_of_Might_and_Magic_III">Heroes of Might and Magic III (1999)</a> terrain sprites. A game I loved in my youth, I was always charmed by its almost Hudson River School-esque depiction of the natural world.</p> 
+                
+                <p>The ultraminimalist original prototype, with only a single terrain type, can be viewed <a href="original-prototype/index.html">here</a>.</p>
+                
+                <p>I am interested in how we might might remember and honor the labor that went into decades-old games, how we might preserve the incredible work and artistry that went into them once their audiences age and dwindle.</p>
+                
+                <p>Stripped of marauding heroes, waiting monsters, glittering resources, and architectural points of interests, we are left with these quiet topographies, vistas of a countryside that does not exist but is infused with a sense of place, teeming with life.</p>  
+            </div>
+        </div>
+    </div>
+    <div id="controls">
+        <div class="row seed">
+            <label for="seed">seed</label>
+            <input type="text" id="seed" size="10">
+            <button type="button" id="newseed" title="new map (R)">new</button>
+        </div>
+        <fieldset>
+            <legend>biomes</legend>
+            <label><input type="checkbox" id="biome-grass" checked> grass</label>
+            <label><input type="checkbox" id="biome-dirt" checked> dirt</label>
+            <label><input type="checkbox" id="biome-snow" checked> snow</label>
+            <label><input type="checkbox" id="biome-sand" checked> sand</label>
+            <label><input type="checkbox" id="biome-swamp" checked> swamp</label>
+            <label><input type="checkbox" id="biome-rough" checked> rough</label>
+            <label><input type="checkbox" id="biome-subterranean"> subterranean</label>
+            <label><input type="checkbox" id="biome-lava" checked> lava</label>
+            <label><input type="checkbox" id="water" checked> water</label>
+        </fieldset>
+        <div class="row">
+            <label><input type="checkbox" id="rivers" checked> rivers</label>
+            <label><input type="checkbox" id="roads" checked> roads</label>
+        </div>
+        <div class="row">
+            <label for="roadType">road</label>
+            <select id="roadType">
+                <option value="auto" selected>auto</option>
+                <option value="cobblestone">cobblestone</option>
+                <option value="gravel">gravel</option>
+                <option value="dirt">dirt</option>
+            </select>
+        </div>
+        <div class="row">
+            <label for="zones">regions</label>
+            <input type="range" id="zones" min="4" max="24" value="10">
+        </div>
+        <div class="row">
+            <label for="density">objects</label>
+            <input type="range" id="density" min="0" max="3" step="0.1" value="0.5">
+        </div>
+        <div class="row buttons">
+            <button type="button" id="regen">repopulate objects</button>
+        </div>
+        <!-- <div class="row">
+            <h3><a href="">details</a></h3>
+        </div> -->
+    </div>
+
+    <script src="js/manifest.js"></script>
+    <script src="js/homm.js"></script>
+</body>
+</html>

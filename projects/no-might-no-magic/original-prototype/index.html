@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>no might, no magic</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+        }
+
+        #mapContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .grass-tile {
+            position: absolute;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .terrain-element {
+            position: absolute;
+            z-index: 1;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+    </style>
+</head>
+<body>
+    <div id="mapContainer"></div>
+
+    <script>
+        const grassSprites = [
+            'tgrb000.png', 'tgrb001.png', 'tgrb002.png', 'tgrb003.png',
+            'tgrb004.png', 'tgrb005.png', 'tgrb006.png', 'tgrb007.png',
+            'tgrb010.png', 'tgrb011.png', 'tgrb012.png', 'tgrb013.png',
+            'tgrb014.png', 'tgrb015.png', 'tgrb016.png', 'tgrb017.png',
+            'tgrb018.png', 'tgrb019.png', 'tgrb020.png', 'tgrb021.png',
+            'tgrb022.png', 'tgrb023.png', 'tgrb024.png', 'tgrb025.png'
+        ].map(sprite => `assets/grass/${sprite}`);
+
+        const terrainSprites = [
+            'AVLf01g0.png', 'AVLf02g0.png', 'AVLf03g0.png', 'AVLf04g0.png',
+            'AVLf05g0.png', 'AVLf06g0.png', 'AVLf07g0.png', 'AVLf08g0.png',
+            'AVLf09g0.png', 'AVLf10g0.png', 'AVLf11g0.png', 'AVLf12g0.png',
+            'AVLfl1d0.png', 'AVLfl2d0.png', 'AVLfl3d0.png', 'AVLfl4d0.png',
+            'AVLfl5d0.png', 'AVLfl6d0.png', 'AVLfl7d0.png', 'AVLfl8d0.png',
+            'AVLlk1g0.png', 'AVLlk2g0.png', 'AVLlk1s0.png',
+            'AVLlk2s0.png', 'AVLlk3s0.png', 'AVLmd1g0.png', 'AVLmd1r0.png',
+            'AVLmd2d0.png', 'AVLmd2g0.png', 'AVLmoss0.png', 'AVLms010.png',
+            'AvLMtGn0.png', 'AvLMtGn1.png', 'AvLMtGn2.png', 'AvLMtGn3.png',
+            'AvLMtGn4.png', 'AvLMtGn5.png', 'AvLMtGr1.png', 'AvLMtGr2.png',
+            'AvLMtGr3.png', 'AvLMtGr4.png', 'AvLMtGr5.png', 'AvLMtGr6.png',
+            'AVLoc1g0.png', 'AVLoc2g0.png', 'AVLPNTR0.png', 'AVLPNTR1.png',
+            'AVLPNTR2.png', 'AVLPNTR3.png', 'AVLPNTR4.png', 'AVLPNTR5.png',
+            'AVLPNTR6.png', 'AVLPNTR7.png', 'AVLSPTR0.png', 'AVLSPTR1.png',
+            'AVLSPTR2.png', 'AVLSPTR3.png', 'AVLSPTR4.png', 'AVLSPTR5.png',
+            'AVLSPTR6.png', 'AVLSPTR7.png', 'AVLSPTR8.png', 'AvLRD020.png',
+            'AvLRD040.png', 'avlroug0.png',
+            'avlroug1.png', 'avlroug2.png', 'AVLs03s0.png', 'AVLctrs0.png',
+            'AVLAUTR0.png', 'AVLAUTR1.png', 'AVLAUTR2.png', 'AVLAUTR3.png',
+            'AVLAUTR4.png', 'AVLAUTR5.png', 'AVLAUTR6.png', 'AVLAUTR7.png',
+            'AVLct2g0.png', 'AVLct3g0.png', 'AVLct4g0.png', 
+        ].map(sprite => `assets/terrain/${sprite}`);
+        
+        // 'AVLlk1r0.png','AVLct4d0.png'
+
+        // Replace the getRandomItem function with this weighted version
+        const getRandomItem = (array) => {
+            const rareSprites = ['tgrb017.png', 'tgrb022.png', 'tgrb023.png', 'tgrb024.png', 'tgrb025.png'];
+            const item = array[Math.floor(Math.random() * array.length)];
+            
+            // If it's a grass sprite and it's one of our rare ones, 75% chance to try again
+            if (item.includes('grass') && rareSprites.some(rare => item.includes(rare)) && Math.random() < 0.75) {
+                return getRandomItem(array);
+            }
+            
+            return item;
+        };
+
+        // Function to load an image and get its dimensions
+        const getImageDimensions = (src) => {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve({ width: img.width, height: img.height });
+                img.src = src;
+            });
+        };
+
+        // Generate the map
+        async function generateMap() {
+            const container = document.getElementById('mapContainer');
+            const containerWidth = window.innerWidth;
+            const containerHeight = window.innerHeight;
+
+            // Get dimensions of a grass tile (they're all the same size)
+            const grassDimensions = await getImageDimensions(grassSprites[0]);
+            const tileWidth = grassDimensions.width;
+            const tileHeight = grassDimensions.height;
+
+            // Calculate number of tiles needed (add extra to ensure coverage)
+            const tilesX = Math.ceil(containerWidth / (tileWidth - 1)) + 1;
+            const tilesY = Math.ceil(containerHeight / (tileHeight - 1)) + 1;
+
+            // Place grass tiles
+            for (let y = 0; y < tilesY; y++) {
+                for (let x = 0; x < tilesX; x++) {
+                    const tile = document.createElement('img');
+                    tile.className = 'grass-tile';
+                    tile.src = getRandomItem(grassSprites);
+                    tile.style.left = `${x * (tileWidth - 1)}px`;
+                    tile.style.top = `${y * (tileHeight - 1)}px`;
+                    container.appendChild(tile);
+                }
+            }
+
+            // Add random terrain elements
+            const numTerrainElements = Math.floor((tilesX * tilesY) * 0.15); // 5% of grass tiles
+            for (let i = 0; i < numTerrainElements; i++) {
+                const terrain = document.createElement('img');
+                terrain.className = 'terrain-element';
+                const terrainSrc = getRandomItem(terrainSprites);
+                terrain.src = terrainSrc;
+
+                // Random position within container
+                const x = Math.random() * (containerWidth - 100); // Subtract some pixels to prevent right edge overflow
+                const y = Math.random() * (containerHeight - 100); // Subtract some pixels to prevent bottom edge overflow
+
+                terrain.style.left = `${x}px`;
+                terrain.style.top = `${y}px`;
+                container.appendChild(terrain);
+            }
+        }
+
+        // Generate initial map
+        generateMap();
+
+        // Regenerate map on window resize
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                document.getElementById('mapContainer').innerHTML = '';
+                generateMap();
+            }, 250);
+        });
+
+        // Regenerate map on click
+        document.addEventListener('click', () => {
+            document.getElementById('mapContainer').innerHTML = '';
+            generateMap();
+        });
+    </script>
+</body>
+</html> 
