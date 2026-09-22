@@ -918,14 +918,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     panel.addEventListener("input", updateRegenVisibility);
     panel.addEventListener("change", updateRegenVisibility);
+    // One land biome at a time on first paint. Subterranean and water stay
+    // available in the panel, but they are never the starting set.
+    const startBiomes = ALL_BIOMES.filter((b) => b !== "subterranean");
     for (const b of ALL_BIOMES)
-        document.getElementById("biome-" + b).checked = Math.random() < 0.5;
-    if (!ALL_BIOMES.some((b) => document.getElementById("biome-" + b).checked))
-        document.getElementById("biome-" + ALL_BIOMES[
-            Math.floor(Math.random() * ALL_BIOMES.length)]).checked = true;
-    document.getElementById("water").checked = Math.random() < 0.5;
-    document.getElementById("rivers").checked = Math.random() < 0.5;
-    document.getElementById("roads").checked = Math.random() < 0.5;
+        document.getElementById("biome-" + b).checked = false;
+    document.getElementById("biome-" + startBiomes[
+        Math.floor(Math.random() * startBiomes.length)]).checked = true;
+    document.getElementById("water").checked = false;
+    document.getElementById("rivers").checked = false;
+    document.getElementById("roads").checked = false;
     document.getElementById("seed").value = randomSeed();
     regenerate(false);
 });
