@@ -77,14 +77,45 @@ function closeProject() {
     document.body.style.overflow = "";
 }
 
+function projectIdFromHash() {
+    const id = location.hash.slice(1);
+    if (!id || !document.getElementById("project-" + id)) return "";
+    return id;
+}
+
+function syncProjectFromHash() {
+    const id = projectIdFromHash();
+    if (id) openProject(id);
+    else closeProject();
+}
+
+function clearProjectHash() {
+    if (!location.hash) return;
+    history.pushState(null, "", location.pathname + location.search);
+}
+
+function dismissProject() {
+    if (history.state && history.state.project) {
+        history.back();
+        return;
+    }
+    clearProjectHash();
+    closeProject();
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     currentTime(); // Initial call to display time immediately
     clockInterval = setInterval(currentTime, 1000); // Update every second
 
     document.querySelectorAll("a[data-project]").forEach(function (link) {
         link.addEventListener("click", function (event) {
+            const id = link.getAttribute("data-project");
+            if (!id || !document.getElementById("project-" + id)) return;
             event.preventDefault();
-            openProject(link.getAttribute("data-project"));
+            if (location.hash !== "#" + id) {
+                history.pushState({ project: id }, "", "#" + id);
+            }
+            openProject(id);
         });
     });
 
@@ -92,15 +123,18 @@ document.addEventListener("DOMContentLoaded", function () {
     if (back) {
         back.addEventListener("click", function (event) {
             event.preventDefault();
-            closeProject();
+            dismissProject();
         });
     }
 
     document.addEventListener("keydown", function (event) {
-        if (event.key === "Escape") {
-            closeProject();
+        if (event.key === "Escape" && !event.repeat) {
+            dismissProject();
         }
     });
+
+    window.addEventListener("hashchange", syncProjectFromHash);
+    syncProjectFromHash();
 });
 
 // Cleanup function using beforeunload instead of unload
