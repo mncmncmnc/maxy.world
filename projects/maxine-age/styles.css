@@ -1,0 +1,40 @@
+body {
+	text-align: center;
+	min-height: 100vh;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+@font-face {
+  font-family: "Unison Pro";
+  src: url("unison-pro-bold.woff2") format("woff2"),
+	   url("unison-pro-bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Keep kerning on at every size (some browsers drop it on small text) */
+.unison, h1, h2 {
+  font-family: "Unison Pro", sans-serif;
+  font-weight: 700;
+  font-kerning: normal;
+  font-feature-settings: "kern" 1;
+}
+
+h1 {
+	font-size: 5vw;
+	margin-top: 0;
+	width: 100%;
+	box-sizing: border-box;
+	padding-inline: 4vw;
+}
+
+
+h2 {
+	font-size: 3vw;
+	margin-bottom: 0;
+}
