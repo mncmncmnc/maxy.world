@@ -1,3 +1,26 @@
+const fonts = [
+  "Data70.woff2",
+  "Hershey-Futural-40.woff",
+  "NIS-JTC-Win-M9-Condensed.woff2",
+  "OldLondon.woff2",
+  "texgyreschola-italic.woff2",
+  "unison-pro-bold.woff"
+];
+
+function pickFont() {
+  const file = fonts[Math.floor(Math.random() * fonts.length)];
+  const format = file.slice(file.lastIndexOf(".") + 1);
+  const style = document.createElement("style");
+  style.textContent =
+    '@font-face{font-family:"Age Face";src:url("fonts/' +
+    encodeURIComponent(file) +
+    '") format("' + format +
+    '");font-weight:400;font-style:normal;font-display:swap;}';
+  document.head.appendChild(style);
+}
+
+pickFont();
+
 const birth = new Date(2026, 8, 26);
 
 function unit(count, singular, plural) {
@@ -6,7 +29,7 @@ function unit(count, singular, plural) {
 
 function ageText(now) {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  if (today < birth) return "0 DAYS OLD";
+  if (today < birth) return "0 days old";
 
   let years = 0;
   for (;;) {
@@ -26,16 +49,16 @@ function ageText(now) {
   }
 
   const daysSince = Math.round((today - cursor) / 86400000);
-  if (years === 0 && months === 0) return unit(daysSince, "DAY", "DAYS") + "\u00a0OLD";
+  if (years === 0 && months === 0) return unit(daysSince, "day", "days") + "\u00a0old";
 
   const weeks = Math.floor(daysSince / 7);
   const days = daysSince % 7;
   const parts = [];
-  if (years) parts.push(unit(years, "YEAR", "YEARS"));
-  if (months) parts.push(unit(months, "MONTH", "MONTHS"));
-  if (weeks) parts.push(unit(weeks, "WEEK", "WEEKS"));
-  if (days) parts.push(unit(days, "DAY", "DAYS"));
-  return parts.join(", ") + "\u00a0OLD";
+  if (years) parts.push(unit(years, "year", "years"));
+  if (months) parts.push(unit(months, "month", "months"));
+  if (weeks) parts.push(unit(weeks, "week", "weeks"));
+  if (days) parts.push(unit(days, "day", "days"));
+  return parts.join(", ") + "\u00a0old";
 }
 
 function render() {

@@ -8,19 +8,10 @@ body {
 	align-items: center;
 }
 
-@font-face {
-  font-family: "Unison Pro";
-  src: url("unison-pro-bold.woff2") format("woff2"),
-	   url("unison-pro-bold.woff") format("woff");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Keep kerning on at every size (some browsers drop it on small text) */
-.unison, h1, h2 {
-  font-family: "Unison Pro", sans-serif;
-  font-weight: 700;
+/* Family is filled in by script.js from fonts/ */
+h1, h2 {
+  font-family: "Age Face", sans-serif;
+  font-weight: 400;
   font-kerning: normal;
   font-feature-settings: "kern" 1;
 }
