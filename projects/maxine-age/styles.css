@@ -17,7 +17,7 @@ h1, h2 {
 }
 
 h1 {
-	font-size: 5vw;
+	font-size: clamp(1.85rem, 5vw, 8rem);
 	margin-top: 0;
 	width: 100%;
 	box-sizing: border-box;
