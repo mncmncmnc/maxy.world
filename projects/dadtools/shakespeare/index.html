@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Shakespeare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div class="heading">
+        <p id="work" class="work"></p>
+        <p id="meta" class="meta"></p>
+        <p id="note" class="note" hidden></p>
+      </div>
+      <div class="actions">
+        <button type="button" id="list" aria-expanded="false" aria-controls="index">List</button>
+        <button type="button" id="another">Another</button>
+      </div>
+    </header>
+    <nav id="index" class="index" hidden aria-label="Speeches"></nav>
+    <article id="passage"></article>
+    <p id="source" class="source"></p>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

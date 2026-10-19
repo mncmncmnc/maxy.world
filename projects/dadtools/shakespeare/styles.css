@@ -1,0 +1,158 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: #ffffff;
+  color: #000000;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: #ffffff;
+  color: #000000;
+  font-family: "EB Garamond", Garamond, "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 21px;
+  line-height: 1.55;
+  font-weight: 400;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding:
+    calc(1.35rem + env(safe-area-inset-top))
+    calc(1.25rem + env(safe-area-inset-right))
+    calc(2.5rem + env(safe-area-inset-bottom))
+    calc(1.25rem + env(safe-area-inset-left));
+}
+
+header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.heading {
+  margin-right: auto;
+}
+
+.work {
+  font-size: 1.15rem;
+  line-height: 1.3;
+}
+
+.meta,
+.note,
+.source {
+  color: #333;
+}
+
+.meta {
+  margin-top: 0.2rem;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.note {
+  margin-top: 0.45rem;
+  font-size: 0.9rem;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+button {
+  border: 0;
+  background: transparent;
+  color: #000000;
+  font: inherit;
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  flex: none;
+  align-items: flex-start;
+  gap: 1.15rem;
+  margin-top: 0.15rem;
+}
+
+.actions button {
+  padding: 0.35rem 0;
+  border-bottom: 1px solid #000000;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.index .group-label {
+  margin-top: 1.75rem;
+  margin-bottom: 0.2rem;
+  font-size: 1rem;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+.index .group:first-child .group-label {
+  margin-top: 0;
+}
+
+.index button {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0;
+  text-align: left;
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+.index button[aria-current="true"] .item-title {
+  font-style: italic;
+}
+
+.item-meta {
+  display: block;
+  margin-top: 0.05rem;
+  color: #333;
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+.speaker {
+  margin-top: 1.35rem;
+  margin-bottom: 0.2rem;
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.verse p {
+  padding-left: 1.15em;
+  text-indent: -1.15em;
+  hyphens: manual;
+}
+
+.prose {
+  margin-top: 0.85rem;
+  line-height: 1.6;
+}
+
+.verse + .verse,
+.prose + .prose,
+.verse + .prose,
+.prose + .verse {
+  margin-top: 0.85rem;
+}
+
+.source {
+  margin-top: 2.5rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
