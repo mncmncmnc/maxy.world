@@ -20,7 +20,7 @@
     last = index;
 
     var url = albums[index].url;
-    link.href = ios() ? url.replace(/^https:\/\//, "itmss://") : url;
+    link.href = ios() ? url.replace(/^https:\/\//, "music://") : url;
   });
 
   fetch("albums.json")
